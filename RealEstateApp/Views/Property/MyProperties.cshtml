@@ -1,0 +1,65 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.Property;
+@model List<PropertyViewModel>
+@{
+    ViewData["Title"] = "Propiedades";
+}
+
+<div class="container-fluid">
+
+    <div class="row mb-3">
+        <div class="col-3 offset-9">
+            <a asp-controller="Property" asp-action="Create" class="btn btn-outline-success">Crear nueva Propiedad</a>
+        </div>
+    </div>
+
+    <div class="row">
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <h2>No hay Propiedades</h2>
+        }
+        else
+        {
+            @foreach (PropertyViewModel property in Model)
+            {
+                <div class="col-4">
+                    <div class="card shadow-sm">
+                        <div id="carousel-@property.Id" class="carousel slide" style="height: 300px; data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @foreach (var image in property.Images)
+                                {
+                                    <div class="carousel-item @(image == property.Images.First() ? "active" : "")">
+                                        <img src="@image.ImageUrl" class="d-block w-100" style="height: 300px;" alt="...">
+                                    </div>
+                                }
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@property.Id" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-@property.Id" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="card-title">@property.TypeOfProperty.Name - @property.Code</h4>
+                            <p class="card-text">@property.TypeOfSale.Name</p>
+                            <p class="card-text">Cantidad de habitaciones: @property.NumberOfRooms</p>
+                            <p class="card-text">Cantidad de Baños: @property.NumberOfBathrooms</p>
+                            <p class="card-text">Tamaño: @property.Size</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a asp-controller="Property" asp-action="Edit" asp-route-id="@property.Id" class="btn btn-sm btn-outline-info">Editar</a>
+                                    <a asp-controller="Property" asp-action="Delete" asp-route-id="@property.Id" class="btn btn-sm btn-outline-danger">Borrar</a>
+                                </div>
+                                <small class="fw-bold fs-6">$@property.Price</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

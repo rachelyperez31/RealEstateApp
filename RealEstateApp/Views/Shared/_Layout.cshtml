@@ -1,0 +1,255 @@
+﻿@using Microsoft.AspNetCore.Http
+@using RealEstateApp.Core.Application.DTOs.Account
+@using RealEstateApp.Core.Application.Helpers
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    var User = httpContextAccessor.HttpContext.Session.Get<AuthenticationResponse>("user");
+    var isAdmin = User != null ? User.Roles.Any(r => r == "Admin") : false;
+    var isClient = User != null ? User.Roles.Any(r => r == "Client") : false;
+    var isAgent = User != null ? User.Roles.Any(r => r == "Agent") : false;
+
+    string redirectAction = isClient ? "Index" : (isAgent ? "Index" : (isAdmin ? "Home" : "Index"));
+    string redirectController = isClient ? "Home" : (isAgent ? "Agent" : (isAdmin ? "Admin" : "Home"));
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RealEstateApp</title>
+    <link rel="shortcut icon" type="image/png" href="~/img/app.png" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="~/lib/animate.css/animate.min.css" rel="stylesheet">
+    <link href="~/lib/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Template Main CSS File -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RealEstateApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+</head>
+<body>
+    <header>
+        <!-- ======= Property Search Section ======= -->
+        <div class="click-closed"></div>
+        <!--/ Form Search Star /-->
+        <div class="box-collapse">
+            <div class="title-box-d">
+                <h3 class="title-d">Búsqueda de Propiedad</h3>
+            </div>
+            <span class="close-box-collapse right-boxed bi bi-x"></span>
+            <div class="box-collapse-wrap form">
+                <form class="form-a">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-group">
+                                <label class="pb-2" for="Type">Código de Propiedad</label>
+                                <input type="text" class="form-control form-control-lg form-control-a" placeholder="Código">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group mt-3">
+                                <label class="pb-2" for="Type">Tipo de Propiedad</label>
+                                <select class="form-control form-select form-control-a" id="Type">
+                                    <option>Seleccionar</option>
+                                    <option>For Rent</option>
+                                    <option>For Sale</option>
+                                    <option>Open House</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group mt-3">
+                                <label class="pb-2" for="bedrooms">Habitaciones</label>
+                                <select class="form-control form-select form-control-a" id="bedrooms">
+                                    <option>Seleccionar</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group mt-3">
+                                <label class="pb-2" for="bathrooms">Baños</label>
+                                <select class="form-control form-select form-control-a" id="bathrooms">
+                                    <option>Seleccionar</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group mt-3">
+                                <label class="pb-2" for="price">Precio Máximo</label>
+                                <select class="form-control form-select form-control-a" id="price">
+                                    <option>Sin límite</option>
+                                    <option>$150,000</option>
+                                    <option>$200,000</option>
+                                    <option>$350,000</option>
+                                    <option>$400,000</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group mt-3">
+                                <label class="pb-2" for="price">Precio Mínimo</label>
+                                <select class="form-control form-select form-control-a" id="price">
+                                    <option>Sin límite</option>
+                                    <option>$50,000</option>
+                                    <option>$100,000</option>
+                                    <option>$150,000</option>
+                                    <option>$200,000</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-b">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- End Property Search Section -->>
+        <!-- ======= Header/Navbar ======= -->
+        <nav class="navbar navbar-default navbar-trans navbar-expand-lg fixed-top">
+            <div class="container">
+                <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDefault" aria-controls="navbarDefault" aria-expanded="false" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a class="navbar-brand text-brand" asp-area="" asp-controller="@redirectController" asp-action="@redirectAction">RealEstate<span class="color-b">App</span></a>
+
+                <div class="navbar-collapse collapse justify-content-center" id="navbarDefault">
+                    <ul class="navbar-nav">
+
+                        @if (User != null)
+                        {
+                            @if (isAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" asp-area="" asp-controller="Admin" asp-action="Home">Inicio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="Admin" asp-action="Agents">Listado de Agentes</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mantenimientos</a>
+                                    <div class="dropdown-menu">
+                                        <a class="nav-link " asp-area="" asp-controller="Admin" asp-action="UsersMaintenance" asp-route-role="Admin">Administradores</a>
+                                        <a class="nav-link " asp-area="" asp-controller="Admin" asp-action="UsersMaintenance" asp-route-role="Developer">Desarrolladores</a>
+                                        <a class="nav-link " asp-area="" asp-controller="Admin" asp-action="TypeOfProperties">Tipos de Propiedades</a>
+                                        <a class="nav-link " asp-area="" asp-controller="Admin" asp-action="TypeOfSales">Tipos de Ventas</a>
+                                        <a class="nav-link " asp-area="" asp-controller="Admin" asp-action="Improvements">Mejoras</a>
+                                    </div>
+                                </li>
+                            }
+                            else if (isClient)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="Agent" asp-action="Agents">Agentes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="Client" asp-action="ClientFavProperties">Mis Propiedades Favoritas</a>
+                                </li>
+                            }
+                            else if (isAgent)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" asp-area="" asp-route-id="@User.Id" asp-controller="Agent" asp-action="Index">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-route-id="@User.Id" asp-controller="Property" asp-action="MyProperties">Mant. Propiedades</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-route-id="@User.Id" asp-controller="Agent" asp-action="Profile">Mi Perfil</a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+
+                            <li class="nav-item">
+                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " asp-area="" asp-controller="User" asp-action="Index">Iniciar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " asp-area="" asp-controller="User" asp-action="Register">¡Únete a la app!</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " asp-area="" asp-controller="Agent" asp-action="Agents">Agentes</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                @if (User != null)
+                {
+                    <form method="post" asp-area="" asp-controller="User" asp-action="LogOut">
+                        <button type="submit" class="btn btn-b-n mx-3">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </form>
+                }
+                @if (User == null || isClient)
+                {
+                    <button type="button" class="btn btn-b-n navbar-toggle-box navbar-toggle-box-collapse" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01">
+                        <i class="bi bi-search"></i>
+                    </button>
+                }
+                
+
+            </div>
+        </nav>
+    </header>
+    <div class="container container-body">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                        <p class="copyright color-text-a">
+                            &copy; 
+                            <span class="color-a">@DateTime.Now.Year</span> - | Ashley Classe, 2022-2004 | Nicolle Batista, 2022-2071 | Rachely Pérez, 2022-1856
+                        </p>
+
+                    <div class="credits">
+                        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="preloader"></div>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="~/lib/swiper/swiper-bundle.min.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

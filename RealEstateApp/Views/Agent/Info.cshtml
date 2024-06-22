@@ -1,0 +1,73 @@
+﻿@model RealEstateApp.Core.Application.ViewModels.User.AgentInfoViewModel
+
+<h1>Información del Agente</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="@Model.User.ImageUrl" class="img-fluid rounded-circle" alt="Foto del Agente" />
+        </div>
+        <div class="col-md-8">
+            <h2>Datos del Agente:</h2>
+            <p><strong>Nombre:</strong> @Model.User.FirstName @Model.User.LastName</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col"> 
+            <h2>Propiedades:</h2>
+            @if (Model.Properties.Any())
+            {
+                <ul class="list-group">
+                    
+                        @foreach (var property in Model.Properties)
+                        {
+                            <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Id" class="text-reset text-decoration-none">
+                            <div class="col-4">
+                                <div class="card shadow-sm">
+                                    <div id="carousel-@property.Id" class="carousel slide" style="height: 300px; data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            @foreach (var image in property.Images)
+                                            {
+                                                <div class="carousel-item @(image == property.Images.First() ? "active" : "")">
+                                                    <img src="@image.ImageUrl" class="d-block w-100" style="height: 300px;" alt="...">
+                                                </div>
+                                            }
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@property.Id" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-@property.Id" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <h4 class="card-title">@property.TypeOfProperty.Name - @property.Code</h4>
+                                        <p class="card-text">@property.TypeOfSale.Name</p>
+                                        <p class="card-text">Cantidad de habitaciones: @property.NumberOfRooms</p>
+                                        <p class="card-text">Cantidad de Baños: @property.NumberOfBathrooms</p>
+                                        <p class="card-text">Tamaño: @property.Size</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="btn-group">
+                                                <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Id" class="btn btn-sm btn-outline-info btn-more-info">Más información</a>
+                                            </div>
+                                            <small class="fw-bold fs-6">$@property.Price</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        }
+
+                </ul>
+            }
+            else
+            {
+                <p>No se encontraron propiedades para este agente.</p>
+            }
+        </div>
+    </div>
+</div>

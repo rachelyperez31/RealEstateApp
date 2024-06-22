@@ -1,0 +1,153 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.Property;
+@using Microsoft.AspNetCore.Http
+@using RealEstateApp.Core.Application.Helpers
+@using RealEstateApp.Core.Application.DTOs.Account
+
+@model SavePropertyViewModel
+@{
+    bool editMode = Model.Id == null ? false : true;
+    ViewData["Title"] = "Guardar Propiedad";
+    var improvementIdsVm = ViewBag.PreviousImprovementsIds;
+}
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    var User = httpContextAccessor.HttpContext.Session.Get<AuthenticationResponse>("user");
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6 offset-3">
+            <div class="card">
+                <div class="card-header bg-dark text-light">
+                    <h4>@(editMode ? $"Editando la propiedad: {Model.Id}" : "Creando una nueva Propiedad")</h4>
+                </div>
+                <div class="card-body">
+
+                    @if (Model.TypeOfPropertys == null || Model.TypeOfPropertys.Count == 0 || Model.TypeOfSales == null || Model.TypeOfSales.Count == 0  || Model.Improvements == null || Model.Improvements.Count == 0 )
+                    {
+                        <h4 class="text-white">Comunique al Adm que no hay Tipo de propiedades/Ventas o Mejoras Creadas en el sistema</h4>
+                        <a asp-controller="Property" asp-action="MyProperties" class="btn btn-warning">Volver atras</a>
+                    }
+                    else
+                    {
+                        <form method="post" asp-route-id="@User.Id" asp-controller="Property" asp-action="@(editMode ? "Edit":"Create")" asp-route-id="@Model.AgentId" enctype="multipart/form-data">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+                            }
+                            @if(editMode){
+                                <div id="carousel-@Model.Id" class="carousel slide" style="height: 300px; data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        @foreach (var image in Model.PreviousImages)
+                                        {
+                                            <div class="carousel-item @(image == Model.PreviousImages.First() ? "active" : "")">
+                                                <img src="@image.ImageUrl" class="d-block w-100" style="height: 300px;" alt="...">
+                                            </div>
+                                        }
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@Model.Id" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-@Model.Id" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                            }
+                            <div class="mb-3">
+                                <label asp-for="Price" class="form-label">Precio ($DOP): </label>
+                                <input type="number" asp-for="Price" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="NumberOfRooms" class="form-label">Número de Habitaciones: </label>
+                                <input type="number" asp-for="NumberOfRooms" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="NumberOfBathrooms" class="form-label">Número de Baños: </label>
+                                <input type="number" step="any" asp-for="NumberOfBathrooms" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Size" class="form-label">área (mts^2): </label>
+                                <input type="number" step="any" asp-for="Size" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Description" class="form-label">Descripción: </label>
+                                <input type="text" step="any" asp-for="Description" class="form-control" />
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label asp-for="TypeOfPropertyId" class="form-label">Tipo de Propiedad: </label>
+                                <select asp-for="TypeOfPropertyId" asp-items="@(new SelectList(Model.TypeOfPropertys,"Id","Name"))" class="form-select">
+                                    <option value="0">Seleccione una opcion</option>
+
+                                </select>
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label asp-for="TypeOfSaleId" class="form-label">Tipo de venta: </label>
+                                <select asp-for="TypeOfSaleId" asp-items="@(new SelectList(Model.TypeOfSales,"Id","Name"))" class="form-select">
+                                    <option value="0">Seleccione una opcion</option>
+
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ImprovementsId" class="form-label">Mejoras: </label>
+                                @foreach (var improvement in Model.Improvements)
+                                {
+                                    bool isChecked = improvementIdsVm != null && improvementIdsVm.Contains(improvement.Id);
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="@improvement.Id" name="ImprovementsId" value="@improvement.Id" @(isChecked ? "checked" : "")>
+                                        <label class="form-check-label" for="@improvement.Id">
+                                            @improvement.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="form-group">
+                                <label for="imagenes">Seleccionar imágenes:</label>
+                                @if (editMode)
+                                {
+                                    <input asp-for="File" class="form-control" />
+                                    <input asp-for="File2" class="form-control" />
+                                    <input asp-for="File3" class="form-control" />
+                                    <input asp-for="File4" class="form-control" />
+                                }
+                                else
+                                {
+                                    <input required asp-for="File" class="form-control" />
+                                    <input asp-for="File2" class="form-control" />
+                                    <input asp-for="File3" class="form-control" />
+                                    <input asp-for="File4" class="form-control" />
+                                }
+                            </div>
+
+                            @*@if (editMode)
+                        {
+                        @foreach (var improvement in Model.Improvements)
+                        {
+                        <input asp-for="ImprovementsId" type="hidden" id="@(improvement.Id)" name="ImprovementsId" value="@improvement.Id">
+                        }
+                        }@**@
+
+                            <input type="hidden" asp-for="Code" />
+                            <input type="hidden" asp-for="Id" />
+
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <a asp-route-id="@User.Id" asp-controller="Property" asp-action="MyProperties" class="btn btn-warning">Volver atras</a>
+                        </form>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

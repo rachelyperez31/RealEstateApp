@@ -1,0 +1,33 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.User
+@using RealEstateApp.Core.Application.Helpers
+@using RealEstateApp.Core.Application.DTOs.Account
+@using RealEstateApp.Core.Application.Enums
+@inject IHttpContextAccessor httpContext;
+@{
+    var user = httpContext.HttpContext.Session.Get<AuthenticationResponse>("user") ?? null;
+    var isClient = user != null ? user.Roles.Any(r => r == Roles.Client.ToString()) : false;
+    var isAgent = user != null ? user.Roles.Any(r => r == Roles.Agent.ToString()) : false;
+    var isAdmin = user != null ? user.Roles.Any(r => r == Roles.Admin.ToString()) : false;
+
+    string redirectAction = isClient ? "Index" : (isAgent ? "Index" : (isAdmin ? "Home" : "Index"));
+    string redirectController = isClient ? "Home" : (isAgent ? "Agent" : (isAdmin ? "Admin" : "Home"));
+}
+@model string
+@{
+    ViewData["Title"] = "access denied";
+}
+
+<div class="row mt-5">
+    <div class="col-6 offset-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h2>No tiene permiso para acceder a esta seccion</h2>
+                    <a class="btn btn-warning" asp-controller="@redirectController" asp-action="@redirectAction" asp-route-id="@user.Id">Ir a la página principal</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

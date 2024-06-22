@@ -1,0 +1,109 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.User
+@using RealEstateApp.Core.Application.Interfaces.Services
+@using RealEstateApp.Core.Application.Enums
+@inject IPropertyService _propertyService
+@model List<UserViewModel>
+
+@{
+    ViewData["Title"] = "Listado de Agentes";
+}
+
+<div class="container-fluid">
+    <section class="bg-white w-100 m-4 d-flex flex-row justify-content-between align-items-center">
+        <div>
+            <h2 class="main-text display-6">Listado de Agentes</h2>
+        </div>
+    </section>
+    <section class="mt-4 w-100 h-100 bg-white d-flex flex-row justify-content-center gap-2 align-items-center">
+        <div class="w-100 h-100 table-responsive bg-white rounded">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr class="main-text">
+                        <th scope="col">NOMBRE</th>
+                        <th scope="col">APELLIDO</th>
+                        <th scope="col">EMAIL</th>
+                        <th scope="col">PROPIEDADES</th>
+                        <th scope="col">ACTIVO</th>
+                        <th scope="col">CAMBIAR ESTADO</th>
+                        <th scope="col">ELIMINAR AGENTE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td scope="row">@user.FirstName</td>
+                            <td scope="row">@user.LastName</td>
+                            <td scope="row">@user.Email</td>
+                            <td scope="row">@await _propertyService.GetAgentPropertiesCount(user.Id)</td>
+                            <td scope="row">@((user.IsActive ? "Sí" : "No"))</td>
+                            <td>
+                                @if (User.Identity.Name != user.Username)
+                                {
+                                    <input type="hidden" name="username" value="@user.Username" />
+                                    <button type="submit" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#confirmActivationModal-@user.Id">
+                                        @(user.IsActive ? "Desactivar" : "Activar")
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled>@(user.IsActive ? "Desactivar" : "Activar")</button>
+                                }
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn btn-outline-danger mx-auto" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-@user.Id"><i class="bi bi-trash3-fill"></i></button>
+                            </td>
+                        </tr>
+
+                        <!-- Modal de confirmación de eliminación -->
+
+                        <div class="modal fade" id="confirmDeleteModal-@user.Id" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-@user.Id" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmActivationModalLabel">Confirmación de Eliminación </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Está seguro de que desea eliminar el usuario de @user.FirstName @user.LastName?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                                        <form asp-controller="Admin" asp-action="DeleteAgent" method="post">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="submit" class="btn btn-primary">Confirmar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Modal de confirmación de activación -->
+
+                        <div class="modal fade" id="confirmActivationModal-@user.Id" tabindex="-1" aria-labelledby="confirmActivationModalLabel-@user.Id" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmActivationModalLabel">Confirmación de @(user.IsActive ? "desactivación" : "activación") </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Está seguro de que desea @(user.IsActive ? "desactivar" : "activar") el usuario de @user.FirstName @user.LastName?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                                        <form asp-controller="Admin" asp-action="ToggleActiveStatus" method="post">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="submit" class="btn btn-primary">Confirmar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

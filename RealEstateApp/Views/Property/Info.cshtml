@@ -1,0 +1,127 @@
+﻿@model RealEstateApp.Core.Application.ViewModels.Property.PropertyAgentViewModel
+
+<div class="container">
+    <h1>Detalle de la Propiedad: @Model.Propiedad.Code</h1>
+
+    <div class="col-lg-12">
+        <div class="row">
+
+            <div class="col-lg-9">
+                <div id="carousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @foreach (var image in Model.Propiedad.Images)
+                        {
+                            <div class="carousel-item @(image == Model.Propiedad.Images.First() ? "active" : "")">
+                                <img src="@image.ImageUrl" class="d-block w-100" alt="...">
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3">
+                <div class="agent-info bg-light p-3">
+                    <h2>Agente</h2>
+                    <div>
+                        <strong>Foto del Agente:</strong><br />
+                        <img src="@Model.Agent.ImageUrl" alt="Foto del Agente" style="max-width: 200px;" />
+                    </div>
+                    <ul>
+                        <li><strong>Nombre del Agente:</strong> @Model.Agent.FirstName @Model.Agent.LastName </li>
+                        <li><strong>Número de Celular:</strong> @Model.Agent.PhoneNumber</li>
+                        <li><strong>Correo Electrónico:</strong> @Model.Agent.Email</li>
+                    </ul>
+
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+        <div class="row mt-1">
+            <div class="col-lg-9">
+                <div class="property-info bg-light ">
+                    <div class="sc-3e132495-5 kNmkSM" ">
+                        <h2>Información de la Propiedad</h2>
+                        <div class="mb-3">
+                            <p><strong>Código de Propiedad:</strong> @Model.Propiedad.Code</p>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <p><i class="fas fa-home"></i> @Model.Propiedad.TypeOfProperty.Name</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <p><i class="fas fa-handshake"></i> @Model.Propiedad.TypeOfSale.Name</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <p><i class="fas fa-dollar-sign"></i> $@Model.Propiedad.Price</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <p><i class="fas fa-bed"></i> @Model.Propiedad.NumberOfRooms</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <p><i class="fas fa-bath"></i> @Model.Propiedad.NumberOfBathrooms</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <p><i class="fas fa-expand"></i> @Model.Propiedad.Size m^2</p>
+                                </div>
+                            </div>
+                            <p><strong>Mejoras:</strong></p>
+                            <div class="row">
+                    @foreach (var improvement in Model.Propiedad.Improvements)
+                    {
+                                    <div class="col-md-4 mb-3">
+                                        <p><i class="fas fa-check"></i> @improvement.Name</p>
+                                    </div>
+                    }
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="property-info bg-light ">
+                        <div class="sc-3e132495-5 kNmkSM" ">
+                            <h2>Descripcion</h2>
+                        </div>
+                        <ul>
+
+                            <li> @Model.Propiedad.Description</li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .carousel-inner {
+            max-height: 300px;
+        }
+
+        .kNmkSM {
+            border-bottom: 1px solid rgb(238, 238, 238);
+            padding-bottom: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+    </style>

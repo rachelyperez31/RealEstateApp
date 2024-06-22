@@ -1,0 +1,18 @@
+﻿@using RealEstateApp.Core.Application.Interfaces.Services
+@inject IUserService _userService
+@inject IPropertyService _propertyService
+@{
+    ViewData["Title"] = "Home del Administrador";
+}
+
+<div class="container">
+    <h1 class="display-4 my-5">Home del Administrador</h1>
+
+    <p>Cantidad de propiedades registradas: @await _propertyService.GetRegisteredProperties()</p>
+    <p>Cantidad de agentes activos: @await _userService.GetActiveAgents()</p>
+    <p>Cantidad de agentes inactivos: @await _userService.GetInactiveAgents()</p>
+    <p>Cantidad de clientes activos: @await _userService.GetActiveClients()</p>
+    <p>Cantidad de clientes inactivos: @await _userService.GetInactiveClients()</p>
+    <p>Cantidad de desarrolladores activos: @await _userService.GetActiveDevelopers()</p>
+    <p>Cantidad de desarrolladores inactivos: @await _userService.GetInactiveDevelopers()</p>
+</div>

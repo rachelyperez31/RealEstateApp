@@ -1,0 +1,32 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.TypeOfProperty
+@model SaveTypeOfPropertyViewModel
+
+<div class="modal fade" id="editToPModal-@Model.Id" tabindex="-1" aria-labelledby="editToPModalLabel-@Model.Id" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editToPModalLabel">Editar @Model.Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-controller="Admin" asp-action="EditToP" class="needs-validation" novalidate>
+                    <div class="mb-3 main-text">
+                        <label asp-for="Name" class="fw-bold mb-2">Nombre:</label>
+                        <input class="form-control" asp-for="Name" required>
+                        <span asp-validation-for="Name" class="invalid-feedback"></span>
+                    </div>
+                    <div class="mb-3 main-text">
+                        <label asp-for="Description" class="fw-bold mb-2">Descripción:</label>
+                        <textarea class="form-control" asp-for="Description" required></textarea>
+                        <span asp-validation-for="Description" class="invalid-feedback"></span>
+                    </div>
+                    <input type="hidden" asp-for="Id" />
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary me-2">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

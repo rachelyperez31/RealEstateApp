@@ -1,0 +1,10 @@
+﻿using RealEstateApp.Core.Application.Interfaces.Repositories.Generic;
+using RealEstateApp.Core.Domain.Entities;
+
+namespace RealEstateApp.Core.Application.Interfaces.Repositories
+{
+    public interface IPropertyRepository : IGenericRepository<Property>
+    {
+        Task<List<Property>> GetAllWithIncludeAsync(List<string> properties);
+    }
+}

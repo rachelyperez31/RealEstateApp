@@ -1,0 +1,57 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.User
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="main-content">
+<div class="row mt-5 fondogeneral">
+    <div class="col-6 offset-3 ">
+        <div class="wrapper-login ">
+                @if (Model.HasError)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <p>@Model.Error</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form method="post" asp-controller="User" asp-action="Index" class="needs-validation" novalidate>
+                    <h1>Inicio de Sesión</h1>
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label">Nombre de Usuario: </label>
+                        <input asp-for="UserName" class="form-control" required/>
+                        <span asp-validation-for="UserName" class="invalid-feedback"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Contraseña: </label>
+                        <input asp-for="Password" class="form-control" required/>
+                        <span asp-validation-for="Password" class="invalid-feedback"></span>
+                    </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-outline-success">Iniciar sesión</button>
+                    <a asp-controller="User" asp-action="ForgotPassword" class="btn btn-outline-warning">Olvidé mi contraseña</a>
+                </div>
+                </form>
+            </div>
+    </div>
+</div>
+</div>
+
+<style>
+    body {
+        background-image: url('../images/fondologinRegist.jpg');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+
+</style>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+}

@@ -1,0 +1,195 @@
+﻿@using RealEstateApp.Core.Application.ViewModels.Property;
+@using RealEstateApp.Core.Application.DTOs.Account
+@using RealEstateApp.Core.Application.Enums
+@using RealEstateApp.Core.Application.Helpers
+@model List<PropertyViewModel>
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+@inject IHttpContextAccessor httpContext;
+@{
+    var user = httpContext.HttpContext.Session.Get<AuthenticationResponse>("user") ?? null;
+    var isClient = user != null ? user.Roles.Any(r => r == Roles.Client.ToString()) : false;
+}
+
+<!-- ======= Intro Single ======= -->
+<section class="intro-single mb-5">
+    <div class="container">
+    <div class="row">
+        <div class="col-md-12 col-lg-8">
+        <div class="title-single-box">
+            <h1 class="title-single">Nuestras Propiedades</h1>
+            <span class="color-text-a">Lista de Todas las Propiedades</span>
+        </div>
+        </div>
+    </div>
+    </div>
+</section><!-- End Intro Single-->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card shadow-sm p-3 bg-light">
+                <h4 class="mb-4">Buscar:</h4>
+                <form method="post" asp-controller="Home" asp-action="Index" class="mb-4">
+                    <div class="form-group mb-3">
+                        <label for="Code" class="form-label">Código:</label>
+                        <input type="text" id="Code" name="Code" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-outline-success">Filtrar</button>
+                </form>
+                <form method="post" asp-controller="Home" asp-action="Index" class="mb-4">
+                    <div class="form-group mb-3">
+                        <label for="TypeOfPropertyId" class="form-label">Tipo de Propiedad:</label>
+                        <select id="TypeOfPropertyId" name="TypeOfPropertyId" class="form-control">
+                            <option value="">Seleccione una opción</option>
+                            @foreach (var typeOfProperty in ViewBag.TypeOfProperty)
+                            {
+                                <option value="@typeOfProperty.Id">@typeOfProperty.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="MinPrice" class="form-label">Precio Mínimo:</label>
+                        <input type="number" id="MinPrice" name="MinPrice" class="form-control" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="MaxPrice" class="form-label">Precio Máximo:</label>
+                        <input type="number" id="MaxPrice" name="MaxPrice" class="form-control" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="NumberOfRooms" class="form-label">Cantidad de Habitaciones:</label>
+                        <input type="number" id="NumberOfRooms" name="NumberOfRooms" class="form-control" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="NumberOfBathrooms" class="form-label">Cantidad de Baños:</label>
+                        <input type="number" id="NumberOfBathrooms" name="NumberOfBathrooms" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-outline-success">Filtrar</button>
+                </form>
+            </div>
+        </div>
+  @*       <!-- ======= Property Grid ======= -->
+        <section class="property-grid grid">
+            <div class="container">
+                <div class="row">
+ *@
+                @if (Model == null || Model.Count == 0)
+                {
+                    <h2>No hay Propiedades</h2>
+                }
+                else
+                {
+                    @foreach (PropertyViewModel property in Model)
+                    {
+                        <div class="col-md-4">
+                            <div class="card-box-a card-shadow" style="height: 480px;">
+                                 <div class="img-box-a" style="width: 100%; height: 100%;">
+                                    <img src="@property.Images.First().ImageUrl" alt="" class="img-a img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                </div>
+                                <div class="card-overlay">
+                                    <div class="card-overlay-a-content">
+                                        <div class="card-header-a">
+                                            <h2 class="card-title-a">
+                                                <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Id" class="text-reset text-decoration-none">
+                                                    @property.Code
+                                                    <br /> @property.TypeOfProperty.Name
+                                                </a>
+                                            </h2>
+                                        </div>
+                                        <div class="card-body-a">
+                                            <div class="price-box d-flex">
+                                                <span class="price-a">@property.TypeOfSale.Name | $ @property.Price</span>
+                                            </div>
+                                            <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Id" class="link-a">
+                                                Más Información
+                                                <span class="bi bi-chevron-right"></span>
+                                            </a>
+                                        </div>
+                                        <div class="card-footer-a">
+                                            <ul class="card-info d-flex justify-content-around">
+                                                <li>
+                                                    <i class="fas fa-expand"></i>
+                                                    <span>
+                                                        @property.Size
+                                                        <sup>2</sup>
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <i class="fas fa-bed"></i>
+                                                    <span>@property.NumberOfRooms</span>
+                                                </li>
+                                                <li>
+                                                    <i class="fas fa-bath"></i>
+                                                    <span>@property.NumberOfBathrooms</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @* <div class="col-4">
+                            <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Id" class="text-reset text-decoration-none">
+                                <div class="card shadow-sm">
+                                    <div id="carousel-@property.Id" class="carousel slide" style="height: 200px;" data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            @foreach (var image in property.Images)
+                                            {
+                                                <div class="carousel-item @(image == property.Images.First() ? "active" : "")">
+                                                    <img src="@image.ImageUrl" class="d-block w-100" style="height: 200px; object-fit: cover;" alt="Property Image">
+                                                </div>
+                                            }
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@property.Id" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-@property.Id" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <h5 class="card-title">@property.TypeOfProperty.Name - @property.Code</h5>
+                                        <p class="card-text">@property.TypeOfSale.Name</p>
+                                        <div class="d-flex">
+                                            <p class="card-text me-4"><i class="fas fa-bed"></i> @property.NumberOfRooms</p>
+                                            <p class="card-text me-4"><i class="fas fa-bath"></i> @property.NumberOfBathrooms</p>
+                                            <p class="card-text"><i class="fas fa-expand"></i> @property.Size m^2</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <p class="card-text fw-bold">$@property.Price</p>
+                                            <div class="btn-group">
+                                                @if (isClient)
+                                                {
+                                                    <form asp-controller="Home" asp-action="TooglePropertyFavStatus" method="post">
+                                                        <input type="hidden" name="clientId" value="@user.Id" />
+                                                        <input type="hidden" name="code" value="@property.Code" />
+                                                        <button type="submit" class="btn btn-outline-danger">
+                                                            @if(property.IsFav){
+                                                                <i class="bi bi-suit-heart-fill"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="bi bi-suit-heart"></i>
+                                                            }
+                                                        </button>
+                                                    </form>
+                                                }
+                                                <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Id" class="btn btn-sm btn-outline-success btn-more-info">Más información</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div> *@
+                    }
+                }
+@*             </div>
+            </div>
+        </section> *@
+    </div>
+</div>

@@ -1,0 +1,90 @@
+﻿@using RealEstateApp.Core.Application.DTOs.Account
+@using RealEstateApp.Core.Application.Enums
+@using RealEstateApp.Core.Application.Helpers
+@using RealEstateApp.Core.Application.ViewModels.FavProperty
+@using RealEstateApp.Core.Application.ViewModels.Property
+@model List<FavPropertyViewModel>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+@inject IHttpContextAccessor httpContext;
+@{
+    var user = httpContext.HttpContext.Session.Get<AuthenticationResponse>("user") ?? null;
+    var isClient = user != null ? user.Roles.Any(r => r == Roles.Client.ToString()) : false;
+}
+
+<div class="container-fluid">
+
+
+
+    <div class="row">
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <h2>No tienes Propiedades Favoritas</h2>
+        }
+        else
+        {
+            @foreach (FavPropertyViewModel property in Model)
+            {
+                <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Property.Id" class="text-reset text-decoration-none">
+                <div class="col-4">
+                    <div class="card shadow-sm">
+                        <div id="carousel-@property.PropertyId" class="carousel slide" style="height: 300px; data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @foreach (var image in property.Property.Images)
+                                {
+                                    <div class="carousel-item @(image == property.Property.Images.First() ? "active" : "")">
+                                        <img src="@image.ImageUrl" class="d-block w-100" style="height: 300px;" alt="...">
+                                    </div>
+                                }
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@property.PropertyId" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-@property.PropertyId" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="card-title">@property.Property.TypeOfProperty.Name - @property.Property.Code</h4>
+                            <p class="card-text">@property.Property.TypeOfSale.Name</p>
+                            <p class="card-text">Cantidad de habitaciones: @property.Property.NumberOfRooms</p>
+                            <p class="card-text">Cantidad de Baños: @property.Property.NumberOfBathrooms</p>
+                            <p class="card-text">Tamaño: @property.Property.Size</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                @if (isClient)
+                                {
+                                    <form asp-controller="Home" asp-action="TooglePropertyFavStatus" method="post">
+                                        <input type="hidden" name="clientId" value="@user.Id" />
+                                        <input type="hidden" name="code" value="@property.Property.Code" />
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            @if (property.Property.IsFav)
+                                            {
+                                                <i class="bi bi-suit-heart-fill"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-suit-heart"></i>
+                                            }
+                                        </button>
+                                    </form>
+                                }
+                                <a asp-controller="Property" asp-action="Info" asp-route-id="@property.Property.Id" class="btn btn-sm btn-outline-info btn-more-info mx-3">Más información</a>
+                            </div>
+                             <small class="fw-bold fs-6">$@property.Property.Price</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            }
+        }
+    </div>
+</div>
